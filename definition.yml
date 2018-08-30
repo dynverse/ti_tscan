@@ -1,6 +1,6 @@
 id: tscan
-docker_repository: dynverse/dynmethods:tscan
-container_url: https://github.com/dynverse/dynmethods/tree/master/containers/tscan
+docker_repository: dynverse/ti_tscan
+container_url: https://github.com/dynverse/ti_tscan
 name: TSCAN
 type: algorithm
 platform: R
