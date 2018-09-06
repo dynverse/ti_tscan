@@ -1,5 +1,6 @@
 id: tscan
 docker_repository: dynverse/ti_tscan
+singularity_collection: 1585
 container_url: https://github.com/dynverse/ti_tscan
 name: TSCAN
 type: algorithm
