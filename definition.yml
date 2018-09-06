@@ -8,11 +8,6 @@ doi: 10.1093/nar/gkw430
 google_scholar_cluster_id: '7813935256210785588'
 trajectory_types:
 - linear
-- bifurcation
-- convergence
-- multifurcation
-- binary_tree
-- tree
 topology_inference: free
 license: GPL (>=2)
 publication_date: '2016-05-13'
