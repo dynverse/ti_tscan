@@ -1,46 +1,78 @@
-id: tscan
-docker_repository: dynverse/ti_tscan
-singularity_collection: 1585
-container_url: https://github.com/dynverse/ti_tscan
-name: TSCAN
-source: tool
-platform: R
-doi: 10.1093/nar/gkw430
-google_scholar_cluster_id: '7813935256210785588'
-trajectory_types:
-- linear
-topology_inference: fixed
-license: GPL (>=2)
-publication_date: '2016-05-13'
-code_url: https://github.com/zji90/TSCAN
+method:
+  id: tscan
+  name: TSCAN
+  tool_id: tscan
+  source: tool
+  platform: R
+  url: https://github.com/zji90/TSCAN
+  license: GPL (>=2)
+  authors:
+  - given: Zhicheng
+    family: Ji
+    email: zji4@jhu.edu
+    github: zji90
+  - given: Hongkai
+    family: Ji
+    email: hji@jhu.edu
+
+
+manuscript:
+  doi: 10.1093/nar/gkw430
+  google_scholar_cluster_id: '7813935256210785588'
+  publication_date: '2016-05-13'
+
+container:
+  url: https://github.com/dynverse/ti_tscan
+  docker: dynverse/ti_tscan
+
+wrapper:
+  type: linear_trajectory
+  topology_inference: fixed
+  trajectory_types:
+  - linear
+  example: /code/example.R
+  input_required:
+  - counts
+
+
 parameters:
-  minexpr_percent:
+  - id: minexpr_percent
     type: numeric
     default: 0.0e+00
-    upper: 1.0
-    lower: 0.0e+00
-  minexpr_value:
+    distribution:
+      type: uniform
+      upper: 1.0
+      lower: 0.0e+00
+  - id: minexpr_value
     type: numeric
     default: 0.0e+00
-    upper: 10.0
-    lower: 0.0e+00
-  cvcutoff:
+    distribution:
+      type: uniform
+      upper: 10.0
+      lower: 0.0e+00
+  - id: cvcutoff
     type: numeric
     default: 0.0e+00
-    upper: 5.0
-    lower: 0.0e+00
-  clusternum_lower:
+    distribution:
+      type: uniform
+      upper: 5.0
+      lower: 0.0e+00
+  - id: clusternum_lower
     type: integer
     default: 2
-    upper: 20
-    lower: 2
-  clusternum_upper:
+    distribution:
+      type: uniform
+      upper: 20
+      lower: 2
+  - id: clusternum_upper
     type: integer
     default: 9
-    upper: 20
-    lower: 2
-  modelNames:
-    type: discrete
+    distribution:
+      type: uniform
+      upper: 20
+      lower: 2
+  - id: modelNames
+    type: character
     default: VVV
     values:
     - EII
@@ -57,22 +89,4 @@ parameters:
     - VEV
     - EVV
     - VVV
-  forbidden: clusternum_lower > clusternum_upper
-input:
-  format: rds
-  required: counts
-output:
-  format: rds
-  outputs:
-  - linear_trajectory
-  - dimred
-  - timings
-wrapper_type: linear_trajectory
-authors:
-- given: Zhicheng
-  family: Ji
-  email: zji4@jhu.edu
-  github: zji90
-- given: Hongkai
-  family: Ji
-  email: hji@jhu.edu
+  - forbidden: clusternum_lower > clusternum_upper

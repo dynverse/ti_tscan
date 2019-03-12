@@ -1,3 +1,7 @@
+#!/usr/local/bin/Rscript
+
+task <- dyncli::main()
+
 library(jsonlite)
 library(readr)
 library(dplyr)
@@ -8,16 +12,8 @@ library(TSCAN)
 #   ____________________________________________________________________________
 #   Load data                                                               ####
 
-data <- read_rds("/ti/input/data.rds")
-params <- jsonlite::read_json("/ti/input/params.json")
-
-#' @examples
-#' data <- dyntoy::generate_dataset(id = "test", num_cells = 300, num_features = 300, model = "multifurcating") %>% c(., .$prior_information)
-#' params <- yaml::read_yaml("containers/tscan/definition.yml")$parameters %>%
-#'   {.[names(.) != "forbidden"]} %>%
-#'   map(~ .$default)
-
-counts <- data$counts
+counts <- task$counts
+params <- task$params
 
 #   ____________________________________________________________________________
 #   Infer trajectory                                                        ####
@@ -59,15 +55,12 @@ pseudotime <- set_names(seq_along(cds_order), cds_order)
 
 dimred <- cds_clus$pcareducere
 
-# return output
-output <- lst(
-  cell_ids = rownames(dimred),
-  pseudotime,
-  dimred,
-  timings = checkpoints
-)
-
 #   ____________________________________________________________________________
 #   Save output                                                             ####
 
-write_rds(output, "/ti/output/output.rds")
+output <- dynwrap::wrap_data(cell_ids = rownames(dimred)) %>%
+  dynwrap::add_dimred(dimred = dimred) %>%
+  dynwrap::add_linear_trajectory(pseudotime = pseudotime) %>%
+  dynwrap::add_timings(timings = checkpoints)
+
+output %>% dyncli::write_output(task$output)
