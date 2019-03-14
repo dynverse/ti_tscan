@@ -15,7 +15,6 @@ method:
     family: Ji
     email: hji@jhu.edu
 
-
 manuscript:
   doi: 10.1093/nar/gkw430
   google_scholar_cluster_id: '7813935256210785588'
@@ -28,12 +27,8 @@ container:
 wrapper:
   type: linear_trajectory
   topology_inference: fixed
-  trajectory_types:
-  - linear
-  example: /code/example.R
-  input_required:
-  - counts
-
+  trajectory_types: linear
+  input_required: counts
 
 parameters:
   - id: minexpr_percent
