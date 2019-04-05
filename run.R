@@ -1,29 +1,20 @@
-library(jsonlite)
-library(readr)
-library(dplyr)
-library(purrr)
+#!/usr/local/bin/Rscript
 
-library(TSCAN)
+task <- dyncli::main()
+
+library(dplyr, warn.conflicts = FALSE)
+library(purrr, warn.conflicts = FALSE)
+
+library(TSCAN, warn.conflicts = FALSE)
 
 #   ____________________________________________________________________________
 #   Load data                                                               ####
 
-data <- read_rds("/ti/input/data.rds")
-params <- jsonlite::read_json("/ti/input/params.json")
-
-#' @examples
-#' data <- dyntoy::generate_dataset(id = "test", num_cells = 300, num_features = 300, model = "multifurcating") %>% c(., .$prior_information)
-#' params <- yaml::read_yaml("containers/tscan/definition.yml")$parameters %>%
-#'   {.[names(.) != "forbidden"]} %>%
-#'   map(~ .$default)
-
-counts <- data$counts
+counts <- task$counts
+parameters <- task$parameters
 
 #   ____________________________________________________________________________
 #   Infer trajectory                                                        ####
-
-# process clusternum
-clusternum <- seq(params$clusternum_lower, params$clusternum_upper, 1)
 
 # TIMING: done with preproc
 checkpoints <- list(method_afterpreproc = as.numeric(Sys.time()))
@@ -35,16 +26,16 @@ cds_prep <- TSCAN::preprocess(
   logbase = 2,
   pseudocount = 1,
   clusternum = NULL,
-  minexpr_value = params$minexpr_value,
-  minexpr_percent = params$minexpr_percent,
-  cvcutoff = params$cvcutoff
+  minexpr_value = parameters$minexpr_value,
+  minexpr_percent = parameters$minexpr_percent,
+  cvcutoff = parameters$cvcutoff
 )
 
 # cluster the data
 cds_clus <- TSCAN::exprmclust(
   cds_prep,
-  clusternum = clusternum,
-  modelNames = params$modelNames,
+  clusternum = parameters$clusternum,
+  modelNames = parameters$modelNames,
   reduce = TRUE
 )
 
@@ -59,15 +50,12 @@ pseudotime <- set_names(seq_along(cds_order), cds_order)
 
 dimred <- cds_clus$pcareducere
 
-# return output
-output <- lst(
-  cell_ids = rownames(dimred),
-  pseudotime,
-  dimred,
-  timings = checkpoints
-)
-
 #   ____________________________________________________________________________
 #   Save output                                                             ####
 
-write_rds(output, "/ti/output/output.rds")
+output <- dynwrap::wrap_data(cell_ids = rownames(dimred)) %>%
+  dynwrap::add_dimred(dimred = dimred) %>%
+  dynwrap::add_linear_trajectory(pseudotime = pseudotime) %>%
+  dynwrap::add_timings(timings = checkpoints)
+
+output %>% dyncli::write_output(task$output)
